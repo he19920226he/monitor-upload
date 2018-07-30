@@ -1,7 +1,8 @@
 import os
 import ConfigParser
 
-class Config:
+
+class Config(object):
     def __init__(self, path=''):
         if path == '':
             path = os.path.dirname(__file__) + '/../config/config.ini'
