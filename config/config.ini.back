@@ -1,0 +1,10 @@
+[document]
+localPath = 本地目录
+remotePath = 远程目录
+
+[sftp]
+host = sftp地址
+port = sftp端口
+publicKey = sftp公钥
+userName = sftp用户名
+password = sftp密码
