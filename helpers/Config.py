@@ -6,7 +6,7 @@ import ConfigParser
 class Config(object):
     def __init__(self, path=''):
         if path == '':
-            path = os.path.dirname(__file__) + '/../config/config.ini'
+            path = os.getcwd() + '/config/config.ini'
         self.path = path
 
     def get_config(self, sections, key, default=''):
