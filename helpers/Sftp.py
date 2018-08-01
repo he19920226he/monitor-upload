@@ -2,6 +2,7 @@
 import Config
 import paramiko
 import os
+import time
 
 
 class Sftp(object):
@@ -19,6 +20,7 @@ class Sftp(object):
         sftp_user_password = self.config.get_config('sftp', 'password', None)
         if sftp_host == '' or sftp_port == '' or sftp_user_name == '':
             print 'sftp config error..............'
+            time.sleep(5)
             exit()
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -32,10 +34,12 @@ class Sftp(object):
             else:
                 if sftp_user_password is None:
                     print 'password is none...............'
+                    time.sleep(5)
                     exit()
                 ssh.connect(sftp_host, sftp_port, sftp_user_name, sftp_user_password)
         except paramiko.ssh_exception.AuthenticationException:
             print 'sftp connection error..................'
+            time.sleep(5)
             exit()
         print 'sftp connection success..................'
         transport = ssh.get_transport()
@@ -53,7 +57,7 @@ class Sftp(object):
         try:
             self.sftp.stat(folder)
         except IOError:
-            print 'remote dir is undefined,create new dir'
+            print 'remote dir is undefined,create new dir:' + folder
             self.sftp.mkdir(folder)
 
     def upload(self, local_path, upload_path):
@@ -62,7 +66,9 @@ class Sftp(object):
             remote_file = self.remote_path + upload_path
             remote_dir = os.path.dirname(remote_file)
             self.check_dir(remote_dir)
+            print 'upload to file:' + remote_file
             self.sftp.put(local_file, remote_file)
+            print 'upload success'
         except WindowsError:
             print 'sftp upload error'
 

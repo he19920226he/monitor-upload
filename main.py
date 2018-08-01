@@ -2,6 +2,7 @@
 from helpers.Config import Config
 from helpers.Sftp import Sftp
 from helpers.Watchdog import Watchdog
+import time
 
 if __name__ == "__main__":
     config = Config()
@@ -12,6 +13,7 @@ if __name__ == "__main__":
     remote_path = config.get_config('document', 'remotePath', '')
     if local_path == '' or remote_path == '':
         print 'path error..................'
+        time.sleep(5)
         exit()
     # sftp链接
     sftp = Sftp(remote_path)
