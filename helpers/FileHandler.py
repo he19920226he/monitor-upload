@@ -32,16 +32,19 @@ class FileHandler(LoggingEventHandler):
         config = Config()
         exclude_dir = config.get_config('exclude', 'dir', '')
         is_exclude = False
-        if exclude_dir != '' and isinstance(exclude_dir, list):
+        print(exclude_dir)
+        if exclude_dir != '':
+            exclude_dir = list(exclude_dir)
             print(exclude_dir)
             for dir_name in exclude_dir:
+                print dir_name
                 if path.index(dir_name) > -1:
                     is_exclude = True
         exclude_file = config.get_config('exclude', 'file', '')
-        if exclude_file != '' and isinstance(exclude_file, list):
-            print(exclude_file)
-            for dir_name in exclude_file:
-                if path.index(dir_name) > -1:
+        if exclude_file != '':
+            exclude_file = list(exclude_file)
+            for file_name in exclude_file:
+                if path.index(file_name) > -1:
                     is_exclude = True
         return is_exclude
 
