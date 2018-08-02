@@ -76,5 +76,6 @@ class Sftp(object):
         remote_dir = self.remote_path + dir_name
         try:
             self.sftp.stat(remote_dir)
+            print 'dir exist'
         except IOError:
             self.sftp.mkdir(remote_dir)
