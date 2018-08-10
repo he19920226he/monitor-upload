@@ -3,7 +3,9 @@ import Config
 import paramiko
 import os
 import time
-
+from paramiko.ssh_exception import (
+    SSHException, NoValidConnectionsError
+)
 
 class Sftp(object):
     def __init__(self, remote_path):
@@ -41,6 +43,10 @@ class Sftp(object):
             print 'sftp connection error..................'
             time.sleep(5)
             exit()
+        except NoValidConnectionsError:
+            print 'sftp connection error..................'
+            time.sleep(5)
+            exit()
         print 'sftp connection success..................'
         transport = ssh.get_transport()
         sftp = paramiko.SFTPClient.from_transport(transport)
@@ -59,6 +65,10 @@ class Sftp(object):
         except IOError:
             print 'remote dir is undefined,create new dir:' + folder
             self.sftp.mkdir(folder)
+        except SSHException:
+            print 'sftp connection dropped........'
+            print 'connection sftp server again.........'
+            self.sftp = self.connection()
 
     def upload(self, local_path, upload_path):
         try:
@@ -71,6 +81,10 @@ class Sftp(object):
             print 'upload success'
         except WindowsError:
             print 'sftp upload error'
+        except SSHException:
+            print 'sftp connection dropped........'
+            print 'connection sftp server again.........'
+            self.sftp = self.connection()
 
     def create_dir(self, dir_name):
         remote_dir = self.remote_path + dir_name
