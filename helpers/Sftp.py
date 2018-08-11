@@ -69,6 +69,7 @@ class Sftp(object):
             print 'sftp connection dropped........'
             print 'connection sftp server again.........'
             self.sftp = self.connection()
+            self.check_dir(folder)
 
     def upload(self, local_path, upload_path):
         try:
@@ -85,6 +86,7 @@ class Sftp(object):
             print 'sftp connection dropped........'
             print 'connection sftp server again.........'
             self.sftp = self.connection()
+            self.upload(local_path, upload_path)
 
     def create_dir(self, dir_name):
         remote_dir = self.remote_path + dir_name
