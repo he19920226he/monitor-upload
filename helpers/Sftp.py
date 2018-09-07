@@ -95,3 +95,8 @@ class Sftp(object):
             print 'dir exist'
         except IOError:
             self.sftp.mkdir(remote_dir)
+        except SSHException:
+            print 'sftp connection dropped........'
+            print 'connection sftp server again.........'
+            self.sftp = self.connection()
+            self.create_dir(dir_name)
