@@ -64,7 +64,6 @@ class Sftp(object):
             self.sftp.stat(folder)
         except IOError:
             print 'remote dir is undefined,create new dir:' + folder
-            self.sftp.mkdir(folder)
         except SSHException:
             print 'sftp connection dropped........'
             print 'connection sftp server again.........'
@@ -87,6 +86,8 @@ class Sftp(object):
             print 'connection sftp server again.........'
             self.sftp = self.connection()
             self.upload(local_path, upload_path)
+        except IOError:
+            print 'sftp upload error'
 
     def create_dir(self, dir_name):
         remote_dir = self.remote_path + dir_name
@@ -94,9 +95,8 @@ class Sftp(object):
             self.sftp.stat(remote_dir)
             print 'dir exist'
         except IOError:
-            self.sftp.mkdir(remote_dir)
+            print 'IO ERROR........'
         except SSHException:
             print 'sftp connection dropped........'
             print 'connection sftp server again.........'
             self.sftp = self.connection()
-            self.create_dir(dir_name)
