@@ -94,8 +94,8 @@ class Sftp(object):
         try:
             self.sftp.stat(remote_dir)
             print 'dir exist'
-        except IOError:
-            print 'IO ERROR........'
+        except IOError as error:
+            print 'IO ERROR........' + error.message
         except SSHException:
             print 'sftp connection dropped........'
             print 'connection sftp server again.........'
