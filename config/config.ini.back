@@ -8,3 +8,7 @@ port = sftp端口
 publicKey = sftp公钥
 userName = sftp用户名
 password = sftp密码
+
+[exclude]
+dir = 要排除上传的文件夹名（.idea,.git）多个用,隔开
+file = 要排除上传的文件名（xml___jb_tmp___,php___jb_tmp___,php___jb_old___）
