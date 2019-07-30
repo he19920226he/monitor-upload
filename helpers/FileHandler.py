@@ -1,6 +1,7 @@
 # -- coding: utf-8 --
 from watchdog.events import LoggingEventHandler
-from Config import Config
+from helpers.Config import Config
+
 
 class FileHandler(LoggingEventHandler):
     def __init__(self, path, sftp):
@@ -23,15 +24,16 @@ class FileHandler(LoggingEventHandler):
             except AttributeError:
                 file_path = event.src_path
             if self.check_exclude(file_path) is False:
-                print 'dir:' + file_path + ';start upload'
+                print('dir:' + file_path + ';start upload')
                 self.create_dir(file_path)
         else:
             file_path = event.src_path
             if self.check_exclude(file_path) is False:
-                print 'file:' + file_path + ';start upload'
+                print('file:' + file_path + ';start upload')
                 self.upload(file_path)
 
-    def check_exclude(self, path):
+    @staticmethod
+    def check_exclude(path):
         config = Config()
         exclude_dir = config.get_config('exclude', 'dir', '')
         is_exclude = False

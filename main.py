@@ -8,11 +8,11 @@ if __name__ == "__main__":
     config = Config()
     # 获取要监控的目录
     local_path = config.get_config('document', 'localPath', '')
-    print 'watch dir:' + local_path + '...................'
+    print('watch dir:' + local_path + '...................')
     # 获取sftp配置
     remote_path = config.get_config('document', 'remotePath', '')
     if local_path == '' or remote_path == '':
-        print 'path error..................'
+        print('path error..................')
         time.sleep(5)
         exit()
     # sftp链接

@@ -1,7 +1,7 @@
 # -- coding: utf-8 --
 import time
 from watchdog.observers import Observer
-from FileHandler import FileHandler
+from helpers.FileHandler import FileHandler
 
 
 class Watchdog(object):
