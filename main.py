@@ -1,8 +1,8 @@
 # -- coding: utf-8 --
-from helpers.Config import Config
-from helpers.Sftp import Sftp
-from helpers.Watchdog import Watchdog
-import time
+# from helpers.Config import Config
+# from helpers.Sftp import Sftp
+# from helpers.Watchdog import Watchdog
+# import time
 from windows.HomePage import HomePage
 
 if __name__ == "__main__":
@@ -23,5 +23,4 @@ if __name__ == "__main__":
     # dog = Watchdog(local_path, sftp)
     # dog.start()
     homePage = HomePage()
-    homePage.index()
 
