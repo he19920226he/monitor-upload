@@ -1,7 +1,6 @@
 # -- coding: utf-8 --
 import os
 import configparser
-import time
 
 
 class Config(object):
@@ -14,17 +13,30 @@ class Config(object):
         cf = configparser.ConfigParser()
         path_is_exists = os.path.exists(self.path)
         if path_is_exists is False:
-            print('config file error..............')
-            time.sleep(5)
-            exit()
-        value = ''
-        try:
-            cf.read(self.path)
-            value = cf.get(sections, key)
-        except ConfigParser.DuplicateSectionError:
-            print('sections:' + sections + ' is error')
-            time.sleep(5)
-            exit()
+            f = open(self.path, 'w')
+            f.close()
+        cf.read(self.path)
+        if not cf.has_section(sections):
+            return default
+
+        if not cf.has_option(sections, key):
+            return default
+
+        value = cf.get(sections, key)
         if value == '':
             return default
+
         return value
+
+    def set_config(self, sections, key, value):
+        cf = configparser.ConfigParser()
+        path_is_exists = os.path.exists(self.path)
+        if path_is_exists is False:
+            f = open(self.path, 'w')
+            f.close()
+        cf.read(self.path)
+        if not cf.has_section(sections):
+            cf.add_section(sections)
+        cf.set(sections, key, value)
+        with open(self.path, 'w') as f:
+            cf.write(f)
