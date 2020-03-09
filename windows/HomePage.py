@@ -1,7 +1,11 @@
 # -- coding: utf-8 --
 from tkinter import *
 from tkinter import filedialog
+from tkinter import messagebox
 from helpers.Config import Config
+import os
+from helpers.Sftp import Sftp
+from helpers.Watchdog import Watchdog
 
 
 class HomePage:
@@ -58,12 +62,12 @@ class HomePage:
         password_input.grid(row=3, column=1, pady=10, columnspan=2)
         # 密钥文件
         Label(upload_tk, text="密钥文件", pady=5, padx=10).grid(row=4)
-        Button(upload_tk, text="选择文件", command=self.show_file_dir).grid(row=4, column=1)
+        Button(upload_tk, text="选择文件", command=self.show_upload_path_dir).grid(row=4, column=1)
         Label(upload_tk, textvariable=self.public_key_path, pady=5, padx=10).grid(row=4, column=2)
         # 本地目录
         Label(upload_tk, text="本地目录", pady=5, padx=10).grid(row=5)
-        local_document = Entry(upload_tk, bd=1, width=70, textvariable=self.local_document)
-        local_document.grid(row=5, column=1, pady=10, columnspan=2)
+        Button(upload_tk, text="选择目录", command=self.show_local_document_dir).grid(row=5, column=1)
+        Label(upload_tk, textvariable=self.local_document, pady=5, padx=10).grid(row=5, column=2)
         # 远程目录
         Label(upload_tk, text="远程目录", pady=5, padx=10).grid(row=6)
         remote_document = Entry(upload_tk, bd=1, width=70, textvariable=self.remote_document)
@@ -78,15 +82,22 @@ class HomePage:
         exclude_file.grid(row=8, column=1, pady=10, columnspan=2)
         Button(upload_tk, text="开始上传", command=self.begin_upload).grid(row=9, column=1, columnspan=3)
 
-    def show_file_dir(self):
+    def show_upload_path_dir(self):
         file_path = filedialog.askopenfilename()
         self.public_key_path.set(file_path)
 
+    def show_local_document_dir(self):
+        dir_name = filedialog.askdirectory()
+        self.local_document.set(dir_name)
+
     def begin_upload(self):
+        global config
         self.update_config()
+        self.upload_to_service()
 
     def update_config(self):
         global config
+        self.check_upload_config()
         config.set_config('sftp', 'host', self.host.get())
         config.set_config('sftp', 'port', self.port.get())
         config.set_config('sftp', 'user_name', self.user_name.get())
@@ -96,3 +107,46 @@ class HomePage:
         config.set_config('document', 'remote_path', self.remote_document.get())
         config.set_config('exclude', 'dir', self.exclude_dir.get())
         config.set_config('exclude', 'file', self.exclude_file.get())
+
+    def check_upload_config(self):
+        global upload_tk
+        if self.host.get() == '':
+            messagebox.showerror(message="HOST地址不能为空", title="错误提示")
+            return False
+
+        if self.port.get() == '':
+            messagebox.showerror(message="PORT端口不能为空", title="错误提示")
+            return False
+
+        if self.user_name.get() == '':
+            messagebox.showerror(message="用户名不能为空", title="错误提示")
+            return False
+
+        if self.password.get() == '' and self.public_key_path.get() == '':
+            messagebox.showerror(message="密码和秘钥文件不能都为空", title="错误提示")
+            return False
+
+        if self.local_document.get() == '':
+            messagebox.showerror(message="本地目录不能为空", title="错误提示")
+            return False
+
+        if not os.path.isdir(self.local_document.get()):
+            messagebox.showerror(message="本地目录不存在", title="错误提示")
+            return False
+
+        if self.remote_document.get() == '':
+            messagebox.showerror(message="远程目录不能为空", title="错误提示")
+            return False
+
+    def upload_to_service(self):
+        remote_path = self.remote_document.get()
+        sftp_object = Sftp(remote_path)
+        sftp = sftp_object.connection()
+        if not sftp:
+            messagebox.showerror(title="错误提示", message="SFTP链接失败")
+            return False
+        sftp_object.sftp = sftp
+        sftp_object.check_remote_path()
+
+        dog = Watchdog(self.local_document.get(), sftp)
+        dog.start()

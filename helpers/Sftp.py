@@ -2,7 +2,6 @@
 from helpers.Config import Config
 import paramiko
 import os
-import time
 from paramiko.ssh_exception import (
     SSHException, NoValidConnectionsError
 )
@@ -11,20 +10,18 @@ from paramiko.ssh_exception import (
 class Sftp(object):
     def __init__(self, remote_path):
         self.config = Config()
-        self.sftp = self.connection()
         self.remote_path = remote_path
+        self.sftp = None
 
     def connection(self):
         print('start connection sftp............')
         sftp_host = self.config.get_config('sftp', 'host', '')
         sftp_port = self.config.get_config('sftp', 'port', '')
-        sftp_user_name = self.config.get_config('sftp', 'userName', '')
-        sftp_public_key = self.config.get_config('sftp', 'publicKey', '')
+        sftp_user_name = self.config.get_config('sftp', 'user_name', '')
+        sftp_public_key = self.config.get_config('sftp', 'public_key', '')
         sftp_user_password = self.config.get_config('sftp', 'password', None)
         if sftp_host == '' or sftp_port == '' or sftp_user_name == '':
-            print('sftp config error..............')
-            time.sleep(5)
-            exit()
+            return False
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
@@ -36,19 +33,14 @@ class Sftp(object):
                 ssh.connect(sftp_host, sftp_port, sftp_user_name, sftp_user_password, key)
             else:
                 if sftp_user_password is None:
-                    print('password is none...............')
-                    time.sleep(5)
-                    exit()
+                    return False
                 ssh.connect(sftp_host, sftp_port, sftp_user_name, sftp_user_password)
         except paramiko.ssh_exception.AuthenticationException:
-            print('sftp connection error..................')
-            time.sleep(5)
-            exit()
+            print(111)
+            return False
         except NoValidConnectionsError:
-            print('sftp connection error..................')
-            time.sleep(5)
-            exit()
-        print('sftp connection success..................')
+            print(233333)
+            return False
         transport = ssh.get_transport()
         sftp = paramiko.SFTPClient.from_transport(transport)
         return sftp
@@ -68,7 +60,8 @@ class Sftp(object):
         except SSHException:
             print('sftp connection dropped........')
             print('connection sftp server again.........')
-            self.sftp = self.connection()
+            if not self.sftp:
+                self.sftp = self.connection()
             self.check_dir(folder)
 
     def upload(self, local_path, upload_path):
